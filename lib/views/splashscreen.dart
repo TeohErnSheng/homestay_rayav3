@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:homestay_raya/login.dart';
+import 'package:homestay_raya/views/login.dart';
 import 'package:homestay_raya/model/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'model/ownerpage.dart';
-import 'model/user.dart';
+import 'ownerpage.dart';
+import '../model/user.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

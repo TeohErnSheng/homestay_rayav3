@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:ndialog/ndialog.dart';
 import 'login.dart';
-import 'model/config.dart';
+import '../model/config.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});

@@ -6,11 +6,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:homestay_raya/model/homestay.dart';
-import 'package:homestay_raya/model/inserthomestay.dart';
+import 'package:homestay_raya/views/inserthomestay.dart';
 import 'package:homestay_raya/model/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ndialog/ndialog.dart';
-import 'config.dart';
+import '../model/config.dart';
 import 'package:http/http.dart' as http;
 
 import 'detailscreen.dart';

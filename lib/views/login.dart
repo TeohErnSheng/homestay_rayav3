@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:ndialog/ndialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'model/config.dart';
-import 'model/ownerpage.dart';
-import 'model/user.dart';
+import '../model/config.dart';
+import 'ownerpage.dart';
+import '../model/user.dart';
 import 'registration.dart';
 
 class LoginScreen extends StatefulWidget {

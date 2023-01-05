@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'login.dart';
-import 'model/user.dart';
+import '../model/user.dart';
 
 class MainPage extends StatelessWidget {
   final User user;
