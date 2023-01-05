@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:ndialog/ndialog.dart';
-import 'mainpage.dart';
-import 'model/user.dart';
-import 'registration.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:ndialog/ndialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'model/config.dart';
+import 'model/ownerpage.dart';
+import 'model/user.dart';
+import 'registration.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -277,12 +278,12 @@ class _LoginScreenState extends State<LoginScreen> {
       var data = jsonDecode(response.body);
       if (response.statusCode == 200 && data['status'] == 'success') {
         final jsonResponse = json.decode(response.body);
-        User user = User.fromJson(jsonResponse);
+        User user = User.fromJson(jsonResponse['data']);
         progressDialog.dismiss();
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => MainPage(user: user)));
+                builder: (BuildContext context) => OwnerPage(user: user)));
         Fluttertoast.showToast(
             msg: "Login Success",
             toastLength: Toast.LENGTH_SHORT,

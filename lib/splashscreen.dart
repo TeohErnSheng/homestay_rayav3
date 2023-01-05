@@ -4,10 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:homestay_raya/login.dart';
 import 'package:homestay_raya/model/config.dart';
-import 'package:homestay_raya/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'mainpage.dart';
+import 'model/ownerpage.dart';
 import 'model/user.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -60,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
               () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (content) => MainPage(user: user))));
+                      builder: (content) => OwnerPage(user: user))));
         } else {
           user = User(
             name: "na",
