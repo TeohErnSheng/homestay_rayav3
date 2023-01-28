@@ -9,28 +9,28 @@ import 'package:homestay_raya/model/homestay.dart';
 import 'package:homestay_raya/views/inserthomestay.dart';
 import 'package:homestay_raya/model/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:homestay_raya/views/login.dart';
+import 'package:homestay_raya/views/ownerpage.dart';
 import 'package:homestay_raya/views/profilescreen.dart';
 import 'package:ndialog/ndialog.dart';
 import '../model/serverconfig.dart';
 import 'package:http/http.dart' as http;
 
-import 'buyerscreen.dart';
 import 'detailscreen.dart';
 import 'editscreen.dart';
+import 'login.dart';
 
-class OwnerPage extends StatefulWidget {
+class BuyerPage extends StatefulWidget {
   final User user;
-  const OwnerPage({super.key, required this.user});
+  const BuyerPage({super.key, required this.user});
 
   @override
-  State<OwnerPage> createState() => _OwnerPageState();
+  State<BuyerPage> createState() => _BuyerPageState();
 }
 
-class _OwnerPageState extends State<OwnerPage> {
+class _BuyerPageState extends State<BuyerPage> {
   TextEditingController searchController = TextEditingController();
-  int _currentIndex = 0;
-  String maintitle = "Home Page";
+  int _currentIndex = 1;
+  String maintitle = "Buyer Page";
   var _lat, _lng;
   late Position _position;
   List<Homestay> homeStayList = <Homestay>[];
@@ -46,7 +46,14 @@ class _OwnerPageState extends State<OwnerPage> {
   @override
   void initState() {
     super.initState();
-    _loadHomestay(search, 1);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _loadHomestay("all", 1);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -63,33 +70,38 @@ class _OwnerPageState extends State<OwnerPage> {
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
-          appBar:
-              AppBar(title: const Text("Owner"), centerTitle: true, actions: [
-            IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  _loadSearchDialog();
+          appBar: AppBar(
+              title: const Text("Homestay"),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      _loadSearchDialog();
+                    }),
+                PopupMenuButton(itemBuilder: (context) {
+                  return [
+                    if (widget.user.name != "na") ...[
+                      const PopupMenuItem<int>(
+                        value: 1,
+                        child: Text("Log Out"),
+                      )
+                    ] else if (widget.user.name == "na") ...[
+                      const PopupMenuItem<int>(
+                        value: 0,
+                        child: Text("Login"),
+                      ),
+                    ]
+                  ];
+                }, onSelected: (value) {
+                  if (value == 0) {
+                    _logIn();
+                  }
+                  if (value == 1) {
+                    _logOut();
+                  }
                 }),
-            PopupMenuButton(itemBuilder: (context) {
-              return [
-                const PopupMenuItem<int>(
-                  value: 0,
-                  child: Text("New Homestay"),
-                ),
-                const PopupMenuItem<int>(
-                  value: 1,
-                  child: Text("Log Out"),
-                ),
-              ];
-            }, onSelected: (value) {
-              if (value == 0) {
-                _gotoNewProduct();
-              }
-              if (value == 1) {
-                _gotoBuyer();
-              }
-            }),
-          ]),
+              ]),
           body: homeStayList.isEmpty
               ? Center(
                   child: Text(titlecenter,
@@ -100,7 +112,7 @@ class _OwnerPageState extends State<OwnerPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Your registered Homestay (${homeStayList.length} found)",
+                        "Homestay ($numberofresult found)",
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
@@ -116,10 +128,7 @@ class _OwnerPageState extends State<OwnerPage> {
                             elevation: 8,
                             child: InkWell(
                               onTap: () {
-                                _choiceDialog(index);
-                              },
-                              onLongPress: () {
-                                _deleteDialog(index);
+                                _showDetails(index);
                               },
                               child: Column(children: [
                                 const SizedBox(
@@ -193,43 +202,42 @@ class _OwnerPageState extends State<OwnerPage> {
                           } else {
                             color = Colors.black;
                           }
-                          return SizedBox(
-                            width: 50,
-                            child: TextButton(
-                                onPressed: () =>
-                                    {_loadHomestay(search, index + 1)},
-                                child: Text(
-                                  (index + 1).toString(),
-                                  style: TextStyle(color: color, fontSize: 18),
-                                )),
-                          );
+                          return TextButton(
+                              onPressed: () =>
+                                  {_loadHomestay(search, index + 1)},
+                              child: Text(
+                                (index + 1).toString(),
+                                style: TextStyle(color: color, fontSize: 18),
+                              ));
                         },
                       ),
                     ),
+                    if (widget.user.name != "na") ...[
+                      BottomNavigationBar(
+                        type: BottomNavigationBarType.fixed,
+                        onTap: onTabTapped,
+                        currentIndex: _currentIndex,
+                        items: const [
+                          BottomNavigationBarItem(
+                              icon: Icon(
+                                Icons.house,
+                              ),
+                              label: "Owner"),
+                          BottomNavigationBarItem(
+                              icon: Icon(
+                                Icons.store_mall_directory,
+                              ),
+                              label: "Homestay"),
+                          BottomNavigationBarItem(
+                              icon: Icon(
+                                Icons.person,
+                              ),
+                              label: "Profile"),
+                        ],
+                      ),
+                    ]
                   ],
                 ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            onTap: onTabTapped,
-            currentIndex: _currentIndex,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.house,
-                  ),
-                  label: "Owner"),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.store_mall_directory,
-                  ),
-                  label: "Homestay"),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.person,
-                  ),
-                  label: "Profile"),
-            ],
-          ),
         ));
   }
 
@@ -273,100 +281,15 @@ class _OwnerPageState extends State<OwnerPage> {
     }
   }
 
-  Future<void> _gotoNewProduct() async {
-    ProgressDialog progressDialog = ProgressDialog(
-      context,
-      blur: 10,
-      message: const Text("Searching your current location"),
-      title: null,
-    );
-    progressDialog.show();
-    if (await _checkPermissionGetLoc()) {
-      progressDialog.dismiss();
-      await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (content) => InsertHomestay(
-                  position: _position,
-                  user: widget.user,
-                  placemarks: placemarks)));
-      _loadHomestay(search, 1);
-    } else {
-      Fluttertoast.showToast(
-          msg: "Please allow the app to access the location",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          fontSize: 14.0);
-    }
-  }
-
-  Future<void> _gotoBuyer() async {
-    user = User(
-      name: "na",
-      email: "na",
-      passkey: "na",
-    );
-    await Navigator.push(context,
-        MaterialPageRoute(builder: (content) => BuyerPage(user: user)));
-  }
-
-  Future<bool> _checkPermissionGetLoc() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        Fluttertoast.showToast(
-            msg: "Please allow the app to access the location",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            fontSize: 14.0);
-        Geolocator.openLocationSettings();
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      Fluttertoast.showToast(
-          msg: "Please allow the app to access the location",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          fontSize: 14.0);
-      Geolocator.openLocationSettings();
-      return false;
-    }
-    _position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    try {
-      placemarks = await placemarkFromCoordinates(
-          _position.latitude, _position.longitude);
-    } catch (e) {
-      Fluttertoast.showToast(
-          msg:
-              "Error in fixing your location. Make sure internet connection is available and try again.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          fontSize: 14.0);
-      return false;
-    }
-    return true;
-  }
-
   void _loadHomestay(String search, int pageno) {
     curpage = pageno;
     numofpage ?? 1;
-    http.post(
-        Uri.parse(
-            "${ServerConfig.server}/homestay_raya/php/load_homestay.php?search=$search&pageno=$pageno"),
-        body: {"Username": widget.user.name}).then((response) {
+    http
+        .get(
+      Uri.parse(
+          "${ServerConfig.server}/homestay_raya/php/loadallhomestay.php?search=$search&pageno=$pageno"),
+    )
+        .then((response) {
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
@@ -394,19 +317,6 @@ class _OwnerPageState extends State<OwnerPage> {
     });
   }
 
-  Future<void> _editDetails(int index) async {
-    Homestay homestay = Homestay.fromJson(homeStayList[index].toJson());
-
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (content) => EditScreen(
-                  homestay: homestay,
-                  user: widget.user,
-                )));
-    _loadHomestay(search, 1);
-  }
-
   Future<void> _showDetails(int index) async {
     Homestay homestay = Homestay.fromJson(homeStayList[index].toJson());
 
@@ -418,118 +328,6 @@ class _OwnerPageState extends State<OwnerPage> {
                   user: widget.user,
                 )));
     _loadHomestay(search, 1);
-  }
-
-  _deleteDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: Text(
-            "Delete ${truncateString(homeStayList[index].name.toString(), 15)}",
-            style: const TextStyle(),
-          ),
-          content: const Text("Are you sure?", style: TextStyle()),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                "Yes",
-                style: TextStyle(),
-              ),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                _deleteProduct(index);
-              },
-            ),
-            TextButton(
-              child: const Text(
-                "No",
-                style: TextStyle(),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  _choiceDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: const Text(
-            "Pick an option",
-            style: TextStyle(),
-          ),
-          content:
-              const Text("Which action do you want to do?", style: TextStyle()),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                "View",
-                style: TextStyle(),
-              ),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                _showDetails(index);
-              },
-            ),
-            TextButton(
-              child: const Text(
-                "Edit",
-                style: TextStyle(),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _editDetails(index);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _deleteProduct(index) {
-    String? x = homeStayList[index].homestayId;
-    try {
-      http.post(
-          Uri.parse(
-              "${ServerConfig.server}/homestay_raya/php/delete_product.php"),
-          body: {
-            "HomestayId": homeStayList[index].homestayId,
-          }).then((response) {
-        var data = jsonDecode(response.body);
-        if (response.statusCode == 200 && data['status'] == "success") {
-          Fluttertoast.showToast(
-              msg: "Success",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              fontSize: 14.0);
-          _loadHomestay(search, 1);
-          return;
-        } else {
-          Fluttertoast.showToast(
-              msg: "Failed",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              fontSize: 14.0);
-          return;
-        }
-      });
-    } catch (e) {
-      print(e.toString());
-    }
   }
 
   void _loadSearchDialog() {
@@ -574,5 +372,20 @@ class _OwnerPageState extends State<OwnerPage> {
             },
           );
         });
+  }
+
+  Future<void> _logOut() async {
+    user = User(
+      name: "na",
+      email: "na",
+      passkey: "na",
+    );
+    await Navigator.push(context,
+        MaterialPageRoute(builder: (content) => BuyerPage(user: user)));
+  }
+
+  Future<void> _logIn() async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (content) => const LoginScreen()));
   }
 }

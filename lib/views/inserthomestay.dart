@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:homestay_raya/model/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:homestay_raya/model/config.dart';
+import 'package:homestay_raya/model/serverconfig.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,6 +40,8 @@ class _InsertHomestayState extends State<InsertHomestay> {
       TextEditingController();
   final TextEditingController _hslatEditingController = TextEditingController();
   final TextEditingController _hslonEditingController = TextEditingController();
+  final TextEditingController _contactNumberEditingController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var _lat, _lng;
 
@@ -178,6 +180,20 @@ class _InsertHomestayState extends State<InsertHomestay> {
                         labelText: 'Facilities',
                         labelStyle: TextStyle(),
                         icon: Icon(Icons.local_activity),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 2.0),
+                        ))),
+                TextFormField(
+                    textInputAction: TextInputAction.next,
+                    controller: _contactNumberEditingController,
+                    validator: (val) => val!.isEmpty || (val.length < 10)
+                        ? "Contact Number should be at least 10 characters"
+                        : null,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                        labelText: 'Contact Number',
+                        labelStyle: TextStyle(),
+                        icon: Icon(Icons.phone),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(width: 2.0),
                         ))),
@@ -363,6 +379,7 @@ class _InsertHomestayState extends State<InsertHomestay> {
     String address = _hsaddressEditingController.text;
     String pax = _hspaxEditingController.text;
     String facility = _hsfacilityEditingController.text;
+    String contactNumber = _contactNumberEditingController.text;
     String price = _hspriceEditingController.text;
     String state = widget.placemarks[0].administrativeArea.toString();
     String local = widget.placemarks[0].locality.toString();
@@ -371,13 +388,15 @@ class _InsertHomestayState extends State<InsertHomestay> {
     String base64Image3 = base64Encode(_image3!.readAsBytesSync());
 
     http.post(
-        Uri.parse("${Config.server}/homestay_raya/php/insert_homestay.php"),
+        Uri.parse(
+            "${ServerConfig.server}/homestay_raya/php/insert_homestay.php"),
         body: {
           "Username": widget.user.name,
           "Name": name,
           "Address": address,
           "Pax": pax,
           "Facilities": facility,
+          "contactNumber": contactNumber,
           "Price": price,
           "Latitude": _lat,
           "Longitude": _lng,

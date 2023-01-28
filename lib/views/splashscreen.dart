@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:homestay_raya/views/buyerscreen.dart';
 import 'package:homestay_raya/views/login.dart';
-import 'package:homestay_raya/model/config.dart';
+import 'package:homestay_raya/model/serverconfig.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'ownerpage.dart';
@@ -21,10 +22,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     checkAndLogin();
-    Timer(
-        const Duration(seconds: 3),
-        () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (content) => const LoginScreen())));
   }
 
   @override
@@ -33,11 +30,17 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Center(
-              child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-          ))
+        children: [
+          const Text("Homestay Raya",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue)),
+          Image.asset(
+            "assets/images/homestay.gif",
+            fit: BoxFit.fill,
+          ),
         ],
       ),
     ));
@@ -49,7 +52,8 @@ class _SplashScreenState extends State<SplashScreen> {
     String password = (prefs.getString('passkey')) ?? '';
     late User user;
     if (email.isNotEmpty) {
-      http.post(Uri.parse("${Config.server}/homestay_raya/php/login_user.php"),
+      http.post(
+          Uri.parse("${ServerConfig.server}/homestay_raya/php/login_user.php"),
           body: {"email": email, "password": password}).then((response) {
         var jsonResponse = json.decode(response.body);
         if (response.statusCode == 200 && jsonResponse['status'] == "success") {
@@ -59,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
               () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (content) => OwnerPage(user: user))));
+                      builder: (content) => BuyerPage(user: user))));
         } else {
           user = User(
             name: "na",
@@ -71,7 +75,9 @@ class _SplashScreenState extends State<SplashScreen> {
               () => Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (content) => const LoginScreen())));
+                      builder: (content) => BuyerPage(
+                            user: user,
+                          ))));
         }
       });
     } else {
@@ -79,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Timer(
           const Duration(seconds: 3),
           () => Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (content) => const LoginScreen())));
+              MaterialPageRoute(builder: (content) => BuyerPage(user: user))));
     }
   }
 }

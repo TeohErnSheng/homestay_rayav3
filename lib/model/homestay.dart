@@ -5,6 +5,7 @@ class Homestay {
   String? address;
   String? pax;
   String? facility;
+  String? contactNumber;
   String? price;
   String? state;
   String? locality;
@@ -16,6 +17,7 @@ class Homestay {
     this.address,
     this.pax,
     this.facility,
+    this.contactNumber,
     this.price,
     this.state,
     this.locality,
@@ -29,6 +31,7 @@ class Homestay {
     address = json['Address'];
     pax = json['Pax'];
     facility = json['Facilities'];
+    contactNumber = json['contactNumber'];
     price = json['Price'];
     state = json['State'];
     locality = json['Locality'];
@@ -43,6 +46,7 @@ class Homestay {
     data['Address'] = address;
     data['Pax'] = pax;
     data['Facilities'] = facility;
+    data['contactNumber'] = contactNumber;
     data['Price'] = price;
     data['State'] = state;
     data['Locality'] = locality;

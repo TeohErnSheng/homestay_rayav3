@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:ndialog/ndialog.dart';
 import 'login.dart';
-import '../model/config.dart';
+import '../model/serverconfig.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -69,7 +69,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       controller: _nameEditingController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                          labelText: 'Name',
+                          labelText: 'Contact Number',
                           labelStyle: TextStyle(),
                           icon: Icon(Icons.person),
                           focusedBorder: OutlineInputBorder(
@@ -328,7 +328,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         message: const Text("Registration in progress.."),
         title: const Text("Registering..."));
     progressDialog.show();
-    http.post(Uri.parse("${Config.server}/homestay_raya/php/register_user.php"),
+    http.post(
+        Uri.parse("${ServerConfig.server}/homestay_raya/php/register_user.php"),
         body: {
           "username": name,
           "email": email,

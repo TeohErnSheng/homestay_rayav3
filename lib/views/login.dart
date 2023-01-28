@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:ndialog/ndialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/config.dart';
+import '../model/serverconfig.dart';
 import 'ownerpage.dart';
 import '../model/user.dart';
 import 'registration.dart';
@@ -273,7 +273,8 @@ class _LoginScreenState extends State<LoginScreen> {
     ProgressDialog progressDialog = ProgressDialog(context,
         message: const Text("Please wait.."), title: const Text("Login user"));
     progressDialog.show();
-    http.post(Uri.parse("${Config.server}/homestay_raya/php/login_user.php"),
+    http.post(
+        Uri.parse("${ServerConfig.server}/homestay_raya/php/login_user.php"),
         body: {"email": email, "password": pass}).then((response) {
       var data = jsonDecode(response.body);
       if (response.statusCode == 200 && data['status'] == 'success') {
